@@ -25,6 +25,7 @@ inline void failed() {
 inline void assert(bool v) { if(!v) failed(); }
 
 // Areas
+void stl();
 void storage();
 
 #endif
