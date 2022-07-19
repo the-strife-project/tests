@@ -1,31 +1,33 @@
 #include <common.hpp>
 #include <RHHT>
+#include <set>
+#include <random>
 
 void rhht() {
-	std::RHHT<int> a;
+	std::BadRNG gen;
+
+	testing("STL > RHHT > 1k sequence check"); {
+		gen.reset();
+		std::set<uint64_t> vals;
+		for(size_t i=0; i<1000; ++i)
+			vals.insert(gen.next());
+		assert(vals.size() == 1000);
+	} passed();
+
+	std::RHHT<uint64_t> a;
 	testing("STL > RHHT > 1k int insertion"); {
-		for(int i=0; i<1000; ++i)
-			a.add(i);
+		gen.reset();
+		for(size_t i=0; i<1000; ++i)
+			a.add(gen.next());
 		assert(a.size() == 1000);
 	} passed();
 
-	testing("STL > RHHT > 1k int iteration"); {
-		size_t items = 0;
-		for(auto x : a) {
-			assert(x >= 0 && x < 1000);
-			++items;
-		}
-		assert(items == 1000);
+	testing("STL > RHHT > 1k int has"); {
+		gen.reset();
+		for(size_t i=0; i<1000; ++i)
+			assert(a.has(gen.next()));
 	} passed();
-
-	testing("STL > RHHT > 1k int const iteration"); {
-		size_t items = 0;
-		for(auto const& x : a) {
-			assert(x >= 0 && x < 1000);
-			++items;
-		}
-		assert(items == 1000);
-	} passed();
+	a.clear();
 
 	std::RHHT<std::pair<int, int>> b;
 	testing("STL > RHHT > 1k pair insertion"); {
@@ -61,12 +63,4 @@ void rhht() {
 			assert(y.s == 1000 - i);
 		}
 	} passed();
-
-	/*testing("STL > RHHT > 1k pair const find"); {
-		auto const x = b.find({69, 0});
-		assert(x != b.end());
-		auto const& y = *x;
-		assert(y.f == 69);
-		assert(y.s == 1000 - 69);
-	} passed();*/
 }
